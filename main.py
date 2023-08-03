@@ -7,11 +7,13 @@
         Harmonize data structure specification
     pokerlishao@gmail.com
 '''
-
-import numpy as np
 import pickle
+import os
+import numpy as np
 import scipy
+import pyassimp
 import utils.chumpy as chumpy
+
 
 
 class SMPL_Loader(pickle.Unpickler):
@@ -107,10 +109,41 @@ class SMPL_Loader(pickle.Unpickler):
                 fp.write( 'f %d %d %d\n' %  (f[0], f[1], f[2]) )
         # todo: save UV texture
         print('Save to ', fname)
+
+
+    # Save to an fbx file
+    def seve_fbx(self,fname = './test_smpl.fbx'):
+        # pass
+        # 本来想试着直接将顶点数据以及mesh数据写入的，但是尝试了一上午发现assimp这个库只适合模型的读取，对于自定义数据的写入极其不友好，所以放弃了
+        # transfrom obj to fbx
+        self.save_obj('./__temp__.obj')
+        with pyassimp.load('./__temp__.obj') as scene:
+            # print(len(scene.meshes[0]))
+            print(type(scene.meshes[0]))
+            pyassimp.export(scene, fname, 'fbx')
+        os.remove('./__temp__.obj')
+        print('remove ./__temp__.obj')
+        print('Save to ', fname)
+
+        # scene = pyassimp.structs.Scene()
+        # pyassimp.call_init(scene)
+        # root_node = pyassimp.structs.Node()
+        # pyassimp.call_init(root_node)
+        # mesh = pyassimp.structs.Mesh()
+        # pyassimp.call_init(mesh)
+
+        # mesh.vertices = self.data['v']
+        # mesh.faces = self.data['f']
+        # scene.meshes.append(mesh)
+        # pyassimp.recur_pythonize(root_node,scene)
+        # pyassimp.export(scene, fname, 'fbx')
+
         
+
+
     # save self.J
-    # def save_joint(self):
-    #     pass
+    def save_joint(self):
+        pass
 
       
 ### helper functions
@@ -174,7 +207,8 @@ class SMPL_Loader(pickle.Unpickler):
 
 
 def main():
-    f_path = 'path/to/smpl_pkl_file'
+    # f_path = 'path/to/smpl_pkl_file'
+    f_path = '/home/poker/dataset/SMPL/SMPL_python_v.1.1.0/smpl/models/basicmodel_f_lbs_10_207_0_v1.1.0.pkl'
     smpl = SMPL_Loader(f_path)
     
     # random pose and shape
@@ -185,6 +219,7 @@ def main():
     
     smpl.cal_shape()
     smpl.save_obj('0.obj')
+    smpl.seve_fbx('0.fbx')
     
     # smpl.print_data()
 
