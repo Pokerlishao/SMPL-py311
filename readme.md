@@ -28,6 +28,7 @@ python main.py
 
 - [ ] Add a Pytorch implementation
 - [ ] Add UV texture mapping
+- [ ] Add animation support
 - [ ] Save joint data
 
 
