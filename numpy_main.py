@@ -67,8 +67,7 @@ class SMPL_Loader(pickle.Unpickler):
         # cal joint location
         self.J = self.data['J_regressor'] @ self.data['v_shaped']
         # cal rotation matrix for each joint by rodigues
-        pose_cube = self.data['pose'].reshape((-1, 1, 3))
-        self.R = self.rodrigues(pose_cube)
+        self.R = self.rodrigues(self.data['pose'].reshape((-1, 1, 3)))
         I_cube = np.broadcast_to(
             np.expand_dims(np.eye(3), axis=0),
             (self.R.shape[0]-1, 3, 3)
@@ -206,22 +205,41 @@ class SMPL_Loader(pickle.Unpickler):
             dd['bs_style'] = 'lbs'
 
 
+
+
+def speed_test(smpl):
+    # about 4.40ms per generation
+    import time
+    T1 = time.perf_counter()
+    for i in range(1000):
+    
+        # random pose and shape
+        trans = np.zeros(3)
+        pose =  (np.random.rand(smpl.pose_shape) - 0.5)
+        betas = (np.random.rand(smpl.beta_shape) - 0.5) * 0.6
+        smpl.set_params(trans,pose,betas)
+        smpl.cal_shape()
+    T2 = time.perf_counter()
+    print('Time :%sms' % ((T2 - T1)*1000))
+
+
 def main():
     # f_path = 'path/to/smpl_pkl_file'
-    f_path = '/home/poker/dataset/SMPL/SMPL_python_v.1.1.0/smpl/models/basicmodel_f_lbs_10_207_0_v1.1.0.pkl'
+    f_path = '/home/poker/dataset/SMPL/SMPL_python_v.1.1.0/smpl/models/basicmodel_f_lbs_10_207_0_v1.1.0.pkl' 
     smpl = SMPL_Loader(f_path)
     
+    speed_test(smpl)
+
     # random pose and shape
-    trans = np.zeros(3)
-    pose =  (np.random.rand(smpl.pose_shape) - 0.5)
-    betas = (np.random.rand(smpl.beta_shape) - 0.5) * 0.6
-    smpl.set_params(trans,pose,betas)
-    
-    smpl.cal_shape()
-    smpl.save_obj('0.obj')
-    smpl.seve_fbx('0.fbx')
-    
-    # smpl.print_data()
+    # trans = np.zeros(3)
+    # pose =  (np.random.rand(smpl.pose_shape) - 0.5)
+    # betas = (np.random.rand(smpl.beta_shape) - 0.5) * 0.6
+    # smpl.set_params(trans,pose,betas)
+    # smpl.cal_shape()
+
+    # smpl.save_obj('0.obj')
+    # smpl.seve_fbx('0.fbx')
+
 
 if __name__ == "__main__":
     main()

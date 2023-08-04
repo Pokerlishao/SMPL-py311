@@ -9,7 +9,9 @@ This repo only relies on the following:
  - Python = 3.11
  - scipy = 1.11.1
  - numpy = 1.25.2
- - pyassimp = 5.2.5 
+ - pyassimp = 5.2.5
+ - pytorch = 2.0.1
+ - CUDA = 11.8
 
  ## Perpare
  The `pyassimp` relies on compiled dynamic libraries, and you can run the following command in ubuntu.
@@ -21,12 +23,16 @@ This repo only relies on the following:
  ## RUN
 
 ```bash
-python main.py
+python pytorch_main.py
+```
+or
+```bash
+python numpy_main.py
 ```
 
  ## Todo
 
-- [ ] Add a Pytorch implementation
+- [x] Add a Pytorch implementation
 - [ ] Add UV texture mapping
 - [ ] Add animation support
 - [ ] Save joint data
